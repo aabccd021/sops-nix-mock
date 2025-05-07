@@ -40,7 +40,6 @@
         sops-nix-mock.nixosModules = nixosModules;
       };
 
-
       devShells.default = pkgs.mkShellNoCC {
         buildInputs = [
           pkgs.nixd
@@ -48,13 +47,11 @@
       };
 
       packages = tests // devShells // {
-
         formatting = treefmtEval.config.build.check self;
         formatter = formatter;
       };
 
     in
-
 
     {
 
@@ -67,7 +64,6 @@
       formatter.x86_64-linux = formatter;
       devShells.x86_64-linux = devShells;
       nixosModules = nixosModules;
-
 
     };
 }
