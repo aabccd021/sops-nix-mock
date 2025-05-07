@@ -17,8 +17,8 @@
   };
 
 
-  outputs = { self, ... }@inputs: 
-  let
+  outputs = { self, ... }@inputs:
+    let
 
       nixosModules.default = import ./nixosModule.nix;
 
@@ -34,11 +34,36 @@
 
       formatter = treefmtEval.config.build.wrapper;
 
-  in
+      tests = import ./tests.nix {
+        pkgs = pkgs;
+        sops-nix = inputs.sops-nix;
+        sops-nix-mock.nixosModules = nixosModules;
+      };
 
 
-  {
-    nixosModules = nixosModules;
+      devShells.default = pkgs.mkShellNoCC {
+        buildInputs = [
+          pkgs.nixd
+        ];
+      };
 
-  };
+      packages = tests // devShells;
+
+    in
+
+
+    {
+
+      packages.x86_64-linux = packages // rec {
+        gcroot = pkgs.linkFarm "gcroot" packages;
+        default = gcroot;
+      };
+
+      checks.x86_64-linux = packages;
+      formatter.x86_64-linux = formatter;
+      devShells.x86_64-linux = devShells;
+      nixosModules = nixosModules;
+
+
+    };
 }
