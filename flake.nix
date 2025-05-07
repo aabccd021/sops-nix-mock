@@ -47,7 +47,11 @@
         ];
       };
 
-      packages = tests // devShells;
+      packages = tests // devShells // {
+
+        formatting = treefmtEval.config.build.check self;
+        formatter = formatter;
+      };
 
     in
 
