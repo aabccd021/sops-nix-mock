@@ -2,11 +2,9 @@
 
   nixConfig.allow-import-from-derivation = false;
 
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    treefmt-nix.url = "github:numtide/treefmt-nix";
-    sops-nix.url = "github:Mic92/sops-nix";
-  };
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  inputs.treefmt-nix.url = "github:numtide/treefmt-nix";
+  inputs.sops-nix.url = "github:Mic92/sops-nix";
 
 
   outputs = { self, ... }@inputs:
