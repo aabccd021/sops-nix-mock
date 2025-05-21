@@ -11,8 +11,6 @@ let
               - ${mockSecrets.age.alice.public}
   '';
 
-  privateKey = builtins.readFile mockSecrets.age.alice.private;
-
   mockSecretsYaml = pkgs.writeText "mock-secrets.yaml" (
     pkgs.lib.generators.toYAML { } cfg.secrets
   );
@@ -42,7 +40,7 @@ in
     sops.age.keyFile = "/run/sops-mock-nix-keys.txt";
 
     boot.initrd.postDeviceCommands = ''
-      printf "${privateKey}" > /run/sops-mock-nix-keys.txt
+      printf "${mockSecrets.age.alice.private}" > /run/sops-mock-nix-keys.txt
       chmod -R 400 /run/sops-mock-nix-keys.txt
     '';
   };
