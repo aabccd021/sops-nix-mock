@@ -1,10 +1,7 @@
 { pkgs, sops-nix, sops-nix-mock }:
 let
 
-
-  lib = pkgs.lib;
-
-  baseModule = { lib, ... }: {
+  baseModule = {
     sops-mock.enable = true;
     sops-mock.secrets = {
       foo = "foo";
