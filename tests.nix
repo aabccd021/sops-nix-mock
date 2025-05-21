@@ -1,4 +1,8 @@
-{ pkgs, sops-nix, sops-nix-mock }:
+{
+  pkgs,
+  sops-nix,
+  sops-nix-mock,
+}:
 let
 
   baseModule = {

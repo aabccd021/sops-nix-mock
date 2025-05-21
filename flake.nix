@@ -7,7 +7,8 @@
   inputs.sops-nix.url = "github:Mic92/sops-nix";
   inputs.mock-secrets-nix.url = "github:aabccd021/mock-secrets-nix";
 
-  outputs = { self, ... }@inputs:
+  outputs =
+    { self, ... }@inputs:
     let
 
       nixosModules.default = import ./nixosModule.nix {
@@ -18,10 +19,13 @@
 
       treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs {
         projectRootFile = "flake.nix";
-        programs.nixpkgs-fmt.enable = true;
+        programs.nixfmt.enable = true;
         programs.shfmt.enable = true;
         programs.shellcheck.enable = true;
-        settings.formatter.shellcheck.options = [ "-s" "sh" ];
+        settings.formatter.shellcheck.options = [
+          "-s"
+          "sh"
+        ];
       };
 
       formatter = treefmtEval.config.build.wrapper;
@@ -38,10 +42,13 @@
         ];
       };
 
-      packages = tests // devShells // {
-        formatting = treefmtEval.config.build.check self;
-        formatter = formatter;
-      };
+      packages =
+        tests
+        // devShells
+        // {
+          formatting = treefmtEval.config.build.check self;
+          formatter = formatter;
+        };
 
     in
 

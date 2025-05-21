@@ -1,5 +1,10 @@
 { mockSecrets }:
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 let
   cfg = config.sops-mock;
 
@@ -11,9 +16,7 @@ let
               - ${mockSecrets.age.alice.public}
   '';
 
-  mockSecretsYaml = pkgs.writeText "mock-secrets.yaml" (
-    pkgs.lib.generators.toYAML { } cfg.secrets
-  );
+  mockSecretsYaml = pkgs.writeText "mock-secrets.yaml" (pkgs.lib.generators.toYAML { } cfg.secrets);
 
   sopsFile = pkgs.runCommand "mock-sops-file" { } ''
     ${lib.getExe pkgs.sops} --config ${sopsYaml} encrypt ${mockSecretsYaml} > "$out"
@@ -35,7 +38,9 @@ in
 
   config = lib.mkIf cfg.enable {
 
-    sops.secrets = builtins.mapAttrs (name: value: { sopsFile = lib.mkForce "${sopsFile}"; }) cfg.secrets;
+    sops.secrets = builtins.mapAttrs (name: value: {
+      sopsFile = lib.mkForce "${sopsFile}";
+    }) cfg.secrets;
 
     sops.age.keyFile = "/run/sops-mock-nix-keys.txt";
 
