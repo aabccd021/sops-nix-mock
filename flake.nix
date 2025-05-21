@@ -5,12 +5,14 @@
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   inputs.treefmt-nix.url = "github:numtide/treefmt-nix";
   inputs.sops-nix.url = "github:Mic92/sops-nix";
-
+  inputs.mock-secrets-nix.url = "github:aabccd021/mock-secrets-nix";
 
   outputs = { self, ... }@inputs:
     let
 
-      nixosModules.default = import ./nixosModule.nix;
+      nixosModules.default = import ./nixosModule.nix {
+        mockSecrets = inputs.mock-secrets-nix.lib.secrets;
+      };
 
       pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
 

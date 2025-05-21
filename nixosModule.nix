@@ -1,3 +1,4 @@
+{ mockSecrets }:
 { pkgs, lib, config, ... }:
 let
   cfg = config.sops-mock;
@@ -7,8 +8,10 @@ let
       - path_regex: mock-secrets.yaml$
         key_groups:
           - age:
-              - age1j04356vjzwwfdykjtsm4rect97zsjw49672qsfd572tw09dx7vjqvrt5up
+              - ${mockSecrets.age.alice.public}
   '';
+
+  privateKey = builtins.readFile mockSecrets.age.alice.private;
 
   mockSecretsYaml = pkgs.writeText "mock-secrets.yaml" (
     pkgs.lib.generators.toYAML { } cfg.secrets
@@ -39,7 +42,7 @@ in
     sops.age.keyFile = "/run/sops-mock-nix-keys.txt";
 
     boot.initrd.postDeviceCommands = ''
-      printf "AGE-SECRET-KEY-1MXG0E35QY2PWSQQF6C55C9PHP6YVDFYA6HZF8U7C4P4YPP6GQVYSF5F2TU" > /run/sops-mock-nix-keys.txt
+      printf "${privateKey}" > /run/sops-mock-nix-keys.txt
       chmod -R 400 /run/sops-mock-nix-keys.txt
     '';
   };
