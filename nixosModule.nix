@@ -13,7 +13,7 @@ let
       - path_regex: mock-secrets.yaml$
         key_groups:
           - age:
-              - ${mockSecrets.age.alice.public}
+              - ${builtins.readFile mockSecrets.age.alice.public}
   '';
 
   mockSecretsYaml = pkgs.writeText "mock-secrets.yaml" (pkgs.lib.generators.toYAML { } cfg.secrets);
@@ -45,7 +45,7 @@ in
     sops.age.keyFile = "/run/sops-mock-nix-keys.txt";
 
     boot.initrd.postDeviceCommands = ''
-      printf "${mockSecrets.age.alice.private}" > /run/sops-mock-nix-keys.txt
+      cp -Lr "${mockSecrets.age.alice.private}" /run/sops-mock-nix-keys.txt
       chmod -R 400 /run/sops-mock-nix-keys.txt
     '';
   };

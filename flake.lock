@@ -7,11 +7,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1747800314,
-        "narHash": "sha256-UpssS3MKrZzPsLCqD7Inc2KOILtYmQDN+Eeyos2pThk=",
+        "lastModified": 1747879750,
+        "narHash": "sha256-QLJT00UvAJYUMpxym1zVOVPiursX62i6yXJ6sFYPQdY=",
         "owner": "aabccd021",
         "repo": "mock-secrets-nix",
-        "rev": "71589c3e4039acf4311caff8c1400d2bc9bb5b3c",
+        "rev": "1268a672a6d44b880e798f46be39145a2e92c5bd",
         "type": "github"
       },
       "original": {
