@@ -31,8 +31,8 @@ in
       };
 
       sops.secrets = {
-        foo.sopsFile = "/this/path/should/be/overridden";
-        lorem.sopsFile = "/this/path/should/be/overridden";
+        foo.sopsFile = "/dev/null";
+        lorem.sopsFile = "/dev/null";
       };
 
     };
