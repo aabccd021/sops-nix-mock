@@ -10,17 +10,21 @@ let
 
   sopsYaml = pkgs.writeText ".sops.yaml" ''
     creation_rules:
-      - path_regex: mock-secrets.yaml$
+      - path_regex: ".*"
         key_groups:
           - age:
               - ${builtins.readFile mockSecrets.age.alice.public}
   '';
 
-  mockSecretsYaml = pkgs.writeText "mock-secrets.yaml" (pkgs.lib.generators.toYAML { } cfg.secrets);
-
-  sopsFile = pkgs.runCommand "mock-sops-file" { } ''
-    ${lib.getExe pkgs.sops} --config ${sopsYaml} encrypt ${mockSecretsYaml} > "$out"
-  '';
+  mkSopsFile =
+    name: value:
+    let
+      key = config.sops.secrets.${name}.key;
+      myml = pkgs.writeText "${name}.yaml" (pkgs.lib.generators.toYAML { } { ${key} = value; });
+    in
+    pkgs.runCommand "${name}-mock-secrets.yaml" { } ''
+      ${lib.getExe pkgs.sops} --config ${sopsYaml} encrypt ${myml} > "$out"
+    '';
 
 in
 {
@@ -34,17 +38,12 @@ in
         bar_secret = "value_of_bar_secret";
       };
     };
-    sopsFile = lib.mkOption {
-      type = lib.types.str;
-      readOnly = true;
-    };
   };
 
   config = lib.mkIf cfg.enable {
-    sops-mock.sopsFile = sopsFile;
 
     sops.secrets = builtins.mapAttrs (name: value: {
-      sopsFile = lib.mkForce "${sopsFile}";
+      sopsFile = lib.mkForce (mkSopsFile name value);
     }) cfg.secrets;
 
     sops.age.keyFile = "/run/sops-mock-nix-keys.txt";
