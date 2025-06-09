@@ -51,4 +51,44 @@ in
     '';
   };
 
+  test2 = pkgs.nixosTest {
+    name = "test2";
+
+    nodes.server =
+      { config, ... }:
+      {
+        imports = [
+          baseModule
+        ];
+
+        sops-mock.secrets = {
+          foo = "fooValue";
+        };
+
+        sops.secrets = {
+          foo.sopsFile = "/dev/null";
+          foo.key = "fookey";
+        };
+
+        environment.systemPackages = [
+          (pkgs.writeShellScriptBin "catFoo" ''
+            cat ${config.sops.secrets.foo.path}
+          '')
+        ];
+
+      };
+
+    # The server should fail to start because the database is not created
+    testScript = ''
+      def assertStdout(exp: str, cmd: str) -> None:
+          act = server.succeed(cmd)
+          if exp != act:
+              raise Exception(f"{exp!r} != {act!r}")
+
+      start_all()
+      server.wait_for_unit("multi-user.target")
+      assertStdout("fooValue", "cat /run/secrets/foo")
+    '';
+  };
+
 }
