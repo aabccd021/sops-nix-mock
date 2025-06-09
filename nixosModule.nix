@@ -34,9 +34,14 @@ in
         bar_secret = "value_of_bar_secret";
       };
     };
+    sopsFile = lib.mkOption {
+      type = lib.types.str;
+      readOnly = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    sops-mock.sopsFile = sopsFile;
 
     sops.secrets = builtins.mapAttrs (name: value: {
       sopsFile = lib.mkForce "${sopsFile}";
