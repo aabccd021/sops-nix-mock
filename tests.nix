@@ -4,21 +4,15 @@
   sops-nix-mock,
 }:
 let
-
   baseModule = {
-    sops-mock.enable = true;
-    sops-mock.secrets = {
-      foo = "foo";
-      lorem = "ipsum";
-    };
-
-    sops.secrets = {
-      foo.sopsFile = "/this/path/should/be/overridden";
-      lorem.sopsFile = "/this/path/should/be/overridden";
-    };
-
-    # Make sops-nix-mock works with nixConfig.allow-import-from-derivation = false;
+    imports = [
+      sops-nix.nixosModules.default
+      sops-nix-mock.nixosModules.default
+    ];
+    # allow-import-from-derivation = false;
     sops.validateSopsFiles = false;
+    sops-mock.enable = true;
+
   };
 
 in
@@ -28,10 +22,19 @@ in
 
     nodes.server = {
       imports = [
-        sops-nix.nixosModules.default
-        sops-nix-mock.nixosModules.default
         baseModule
       ];
+
+      sops-mock.secrets = {
+        foo = "foo";
+        lorem = "ipsum";
+      };
+
+      sops.secrets = {
+        foo.sopsFile = "/this/path/should/be/overridden";
+        lorem.sopsFile = "/this/path/should/be/overridden";
+      };
+
     };
 
     # The server should fail to start because the database is not created
@@ -47,4 +50,5 @@ in
       assertStdout("ipsum", "cat /run/secrets/lorem")
     '';
   };
+
 }
