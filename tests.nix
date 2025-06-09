@@ -87,7 +87,7 @@ in
 
       start_all()
       server.wait_for_unit("multi-user.target")
-      assertStdout("fooValue", "cat /run/secrets/foo")
+      assertStdout("fooValue", "catFoo")
     '';
   };
 
