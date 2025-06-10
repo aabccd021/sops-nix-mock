@@ -17,8 +17,9 @@ let
   '';
 
   mkSopsFile =
-    name: cfg:
+    cfg:
     let
+      name = cfg._module.args.name;
       key = config.sops.secrets.${name}.key;
       myml = pkgs.writeText "${name}.yaml" (pkgs.lib.generators.toYAML { } { ${key} = cfg.value; });
     in
@@ -46,7 +47,7 @@ in
               };
             };
             config = {
-              sopsFile = mkSopsFile config._module.args.name config;
+              sopsFile = mkSopsFile config;
             };
           }
         )
