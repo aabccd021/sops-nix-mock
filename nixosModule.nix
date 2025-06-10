@@ -33,6 +33,11 @@ in
 
   options.sops-mock = {
     enable = lib.mkEnableOption "Enable the sops-mock module";
+    age.keyFile = lib.mkOption {
+      type = lib.types.path;
+      default = "/run/sops-mock-nix-keys.txt";
+      readOnly = true;
+    };
     secrets = lib.mkOption {
       type = lib.types.attrsOf (
         lib.types.submodule (
@@ -61,7 +66,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    sops.age.keyFile = "/run/sops-mock-nix-keys.txt";
     boot.initrd.postDeviceCommands = ''
       cp -Lr "${mockSecrets.age.alice.private}" /run/sops-mock-nix-keys.txt
       chmod -R 400 /run/sops-mock-nix-keys.txt

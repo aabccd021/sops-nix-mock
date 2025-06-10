@@ -33,6 +33,8 @@ in
           lorem.key = "loremkey";
         };
 
+        sops.age.keyFile = config.sops-mock.age.keyFile;
+
         sops.secrets = {
           foo.sopsFile = config.sops-mock.secrets.foo.sopsFile;
           lorem.sopsFile = config.sops-mock.secrets.lorem.sopsFile;
@@ -67,6 +69,7 @@ in
 
         sops-mock.secrets.foo.value = "fooValue";
 
+        sops.age.keyFile = config.sops-mock.age.keyFile;
         sops.secrets.foo = {
           sopsFile = config.sops-mock.secrets.foo.sopsFile;
           key = "fookey";
