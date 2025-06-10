@@ -26,8 +26,8 @@ in
       ];
 
       sops-mock.secrets = {
-        foo = "foo";
-        lorem = "ipsum";
+        foo.value = "foo";
+        lorem.value = "ipsum";
       };
 
       sops.secrets = {
@@ -61,9 +61,7 @@ in
           baseModule
         ];
 
-        sops-mock.secrets = {
-          foo = "fooValue";
-        };
+        sops-mock.secrets.foo.value = "fooValue";
 
         sops.secrets = {
           foo.sopsFile = "/dev/null";

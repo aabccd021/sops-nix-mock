@@ -17,10 +17,10 @@ let
   '';
 
   mkSopsFile =
-    name: value:
+    name: cfg:
     let
       key = config.sops.secrets.${name}.key;
-      myml = pkgs.writeText "${name}.yaml" (pkgs.lib.generators.toYAML { } { ${key} = value; });
+      myml = pkgs.writeText "${name}.yaml" (pkgs.lib.generators.toYAML { } { ${key} = cfg.value; });
     in
     pkgs.runCommand "${name}-mock-secrets.yaml" { } ''
       ${lib.getExe pkgs.sops} --config ${sopsYaml} encrypt ${myml} > "$out"
@@ -32,11 +32,15 @@ in
   options.sops-mock = {
     enable = lib.mkEnableOption "Enable the sops-mock module";
     secrets = lib.mkOption {
-      type = lib.types.attrsOf lib.types.str;
-      example = {
-        foo_secret = "value_of_foo_secret";
-        bar_secret = "value_of_bar_secret";
-      };
+      type = lib.types.attrsOf (
+        lib.types.submodule {
+          options = {
+            value = lib.mkOption {
+              type = lib.types.str;
+            };
+          };
+        }
+      );
     };
   };
 
