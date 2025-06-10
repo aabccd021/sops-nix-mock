@@ -31,6 +31,10 @@ in
           foo.value = "foo";
           lorem.value = "ipsum";
           lorem.key = "loremkey";
+          dolor = {
+            key = "sit";
+            value = "dolorValue";
+          };
         };
 
         sops.age.keyFile = config.sops-mock.age.keyFile;
@@ -39,6 +43,8 @@ in
           foo.sopsFile = config.sops-mock.secrets.foo.sopsFile;
           lorem.sopsFile = config.sops-mock.secrets.lorem.sopsFile;
           lorem.key = "loremkey";
+          dolor.key = "sit";
+          dolor.sopsFile = config.sops-mock.secrets.dolor.sopsFile;
         };
 
       };
@@ -54,6 +60,7 @@ in
       server.wait_for_unit("multi-user.target")
       assertStdout("foo", "cat /run/secrets/foo")
       assertStdout("ipsum", "cat /run/secrets/lorem")
+      assertStdout("dolorValue", "cat /run/secrets/dolor")
     '';
   };
 
