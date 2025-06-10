@@ -30,11 +30,13 @@ in
         sops-mock.secrets = {
           foo.value = "foo";
           lorem.value = "ipsum";
+          lorem.key = "loremkey";
         };
 
         sops.secrets = {
           foo.sopsFile = config.sops-mock.secrets.foo.sopsFile;
           lorem.sopsFile = config.sops-mock.secrets.lorem.sopsFile;
+          lorem.key = "loremkey";
         };
 
       };
