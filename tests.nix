@@ -28,23 +28,30 @@ in
         ];
 
         sops-mock.secrets = {
-          foo.value = "foo";
-          lorem.value = "ipsum";
-          lorem.key = "loremkey";
-          dolor = {
-            key = "sit";
-            value = "dolorValue";
+          foo = {
+            key = "foo";
+            value = "fooValue";
           };
+          lorem = {
+            key = "ipsum";
+            value = "loremValue";
+          };
+          dolor.value = "dolorValue";
         };
 
-        sops.age.keyFile = config.sops-mock.age.keyFile;
-
-        sops.secrets = {
-          foo.sopsFile = config.sops-mock.secrets.foo.sopsFile;
-          lorem.sopsFile = config.sops-mock.secrets.lorem.sopsFile;
-          lorem.key = "loremkey";
-          dolor.key = "sit";
-          dolor.sopsFile = config.sops-mock.secrets.dolor.sopsFile;
+        sops = {
+          age.keyFile = config.sops-mock.age.keyFile;
+          secrets = {
+            foo.sopsFile = config.sops-mock.secrets.foo.sopsFile;
+            lorem = {
+              key = "ipsum";
+              sopsFile = config.sops-mock.secrets.lorem.sopsFile;
+            };
+            dolor = {
+              sopsFile = config.sops-mock.secrets.dolor.sopsFile;
+              key = "sit";
+            };
+          };
         };
 
       };
@@ -58,8 +65,8 @@ in
 
       start_all()
       server.wait_for_unit("multi-user.target")
-      assertStdout("foo", "cat /run/secrets/foo")
-      assertStdout("ipsum", "cat /run/secrets/lorem")
+      assertStdout("fooValue", "cat /run/secrets/foo")
+      assertStdout("loremValue", "cat /run/secrets/lorem")
       assertStdout("dolorValue", "cat /run/secrets/dolor")
     '';
   };
@@ -76,11 +83,8 @@ in
 
         sops-mock.secrets.foo.value = "fooValue";
 
+        sops.secrets.foo.sopsFile = config.sops-mock.secrets.foo.sopsFile;
         sops.age.keyFile = config.sops-mock.age.keyFile;
-        sops.secrets.foo = {
-          sopsFile = config.sops-mock.secrets.foo.sopsFile;
-          key = "fookey";
-        };
 
         environment.systemPackages = [
           (pkgs.writeShellScriptBin "catFoo" ''
