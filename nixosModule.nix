@@ -8,6 +8,8 @@
 let
   cfg = config.sops-mock;
 
+  sopsConfig = config.sops;
+
   sopsYaml = pkgs.writeText ".sops.yaml" ''
     creation_rules:
       - path_regex: ".*"
@@ -20,8 +22,7 @@ let
     cfg:
     let
       name = cfg._module.args.name;
-      key = config.sops.secrets.${name}.key;
-      myml = pkgs.writeText "${name}.yaml" (pkgs.lib.generators.toYAML { } { ${key} = cfg.value; });
+      myml = pkgs.writeText "${name}.yaml" (pkgs.lib.generators.toYAML { } { ${cfg.key} = cfg.value; });
     in
     pkgs.runCommand "${name}-mock-secrets.yaml" { } ''
       ${lib.getExe pkgs.sops} --config ${sopsYaml} encrypt ${myml} > "$out"
@@ -38,6 +39,10 @@ in
           { config, ... }:
           {
             options = {
+              key = lib.mkOption {
+                type = lib.types.str;
+                default = sopsConfig.secrets.${config._module.args.name}.key;
+              };
               value = lib.mkOption {
                 type = lib.types.str;
               };
