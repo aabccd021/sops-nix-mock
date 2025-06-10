@@ -54,18 +54,11 @@ in
     };
   };
 
-  config.sops = (
-    lib.mkIf cfg.enable {
-      age.keyFile = "/run/sops-mock-nix-keys.txt";
-    }
-  );
-
-  config.boot = (
-    lib.mkIf cfg.enable {
-      initrd.postDeviceCommands = ''
-        cp -Lr "${mockSecrets.age.alice.private}" /run/sops-mock-nix-keys.txt
-        chmod -R 400 /run/sops-mock-nix-keys.txt
-      '';
-    }
-  );
+  config = lib.mkIf cfg.enable {
+    sops.age.keyFile = "/run/sops-mock-nix-keys.txt";
+    boot.initrd.postDeviceCommands = ''
+      cp -Lr "${mockSecrets.age.alice.private}" /run/sops-mock-nix-keys.txt
+      chmod -R 400 /run/sops-mock-nix-keys.txt
+    '';
+  };
 }
