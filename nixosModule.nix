@@ -33,28 +33,39 @@ in
     enable = lib.mkEnableOption "Enable the sops-mock module";
     secrets = lib.mkOption {
       type = lib.types.attrsOf (
-        lib.types.submodule {
-          options = {
-            value = lib.mkOption {
-              type = lib.types.str;
+        lib.types.submodule (
+          { config, ... }:
+          {
+            options = {
+              value = lib.mkOption {
+                type = lib.types.str;
+              };
+              sopsFile = lib.mkOption {
+                type = lib.types.path;
+                readOnly = true;
+              };
             };
-          };
-        }
+            config = {
+              sopsFile = mkSopsFile config._module.args.name config;
+            };
+          }
+        )
       );
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  config.sops = (
+    lib.mkIf cfg.enable {
+      age.keyFile = "/run/sops-mock-nix-keys.txt";
+    }
+  );
 
-    sops.secrets = builtins.mapAttrs (name: value: {
-      sopsFile = lib.mkForce (mkSopsFile name value);
-    }) cfg.secrets;
-
-    sops.age.keyFile = "/run/sops-mock-nix-keys.txt";
-
-    boot.initrd.postDeviceCommands = ''
-      cp -Lr "${mockSecrets.age.alice.private}" /run/sops-mock-nix-keys.txt
-      chmod -R 400 /run/sops-mock-nix-keys.txt
-    '';
-  };
+  config.boot = (
+    lib.mkIf cfg.enable {
+      initrd.postDeviceCommands = ''
+        cp -Lr "${mockSecrets.age.alice.private}" /run/sops-mock-nix-keys.txt
+        chmod -R 400 /run/sops-mock-nix-keys.txt
+      '';
+    }
+  );
 }

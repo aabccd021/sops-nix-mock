@@ -20,22 +20,24 @@ in
   test1 = pkgs.nixosTest {
     name = "test1";
 
-    nodes.server = {
-      imports = [
-        baseModule
-      ];
+    nodes.server =
+      { config, ... }:
+      {
+        imports = [
+          baseModule
+        ];
 
-      sops-mock.secrets = {
-        foo.value = "foo";
-        lorem.value = "ipsum";
+        sops-mock.secrets = {
+          foo.value = "foo";
+          lorem.value = "ipsum";
+        };
+
+        sops.secrets = {
+          foo.sopsFile = config.sops-mock.secrets.foo.sopsFile;
+          lorem.sopsFile = config.sops-mock.secrets.lorem.sopsFile;
+        };
+
       };
-
-      sops.secrets = {
-        foo.sopsFile = "/dev/null";
-        lorem.sopsFile = "/dev/null";
-      };
-
-    };
 
     # The server should fail to start because the database is not created
     testScript = ''
@@ -63,9 +65,9 @@ in
 
         sops-mock.secrets.foo.value = "fooValue";
 
-        sops.secrets = {
-          foo.sopsFile = "/dev/null";
-          foo.key = "fookey";
+        sops.secrets.foo = {
+          sopsFile = config.sops-mock.secrets.foo.sopsFile;
+          key = "fookey";
         };
 
         environment.systemPackages = [
