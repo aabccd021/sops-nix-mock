@@ -25,7 +25,7 @@
         );
 
       nixosModules.default = import ./nixosModule.nix {
-        mockSecrets = inputs.mock-secrets-nix.lib.secrets;
+        mock-secrets = inputs.mock-secrets-nix.lib.secrets;
       };
 
       pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;

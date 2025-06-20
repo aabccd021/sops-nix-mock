@@ -1,4 +1,4 @@
-{ mockSecrets }:
+{ mock-secrets }:
 {
   pkgs,
   lib,
@@ -15,7 +15,7 @@ let
       - path_regex: ".*"
         key_groups:
           - age:
-              - ${builtins.readFile mockSecrets.age.alice.public}
+              - ${builtins.readFile mock-secrets.age.alice.public}
   '';
 
   mkSopsFile =
@@ -67,7 +67,7 @@ in
 
   config = lib.mkIf cfg.enable {
     boot.initrd.postDeviceCommands = ''
-      cp -Lr "${mockSecrets.age.alice.private}" /run/sops-mock-nix-keys.txt
+      cp -Lr "${mock-secrets.age.alice.private}" /run/sops-mock-nix-keys.txt
       chmod -R 400 /run/sops-mock-nix-keys.txt
     '';
   };
