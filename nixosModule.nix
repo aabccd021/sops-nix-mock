@@ -1,4 +1,3 @@
-{ mock-secrets }:
 {
   pkgs,
   lib,
@@ -15,7 +14,7 @@ let
       - path_regex: ".*"
         key_groups:
           - age:
-              - ${builtins.readFile mock-secrets.age.alice.public}
+              - ${config.mock-secrets.age.alice.public}
   '';
 
   mkSopsFile =
@@ -66,9 +65,13 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    boot.initrd.postDeviceCommands = ''
-      cp -Lr "${mock-secrets.age.alice.private}" /run/sops-mock-nix-keys.txt
-      chmod -R 400 /run/sops-mock-nix-keys.txt
-    '';
+    boot.initrd.postDeviceCommands =
+      let
+        keys = pkgs.writeText "sops-mock-keys.txt" config.mock-secrets.age.alice.private;
+      in
+      ''
+        cp -Lr "${keys}" /run/sops-mock-nix-keys.txt
+        chmod -R 400 /run/sops-mock-nix-keys.txt
+      '';
   };
 }
