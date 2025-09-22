@@ -27,7 +27,6 @@
       nixosModules.default = {
         imports = [
           ./nixosModule.nix
-          inputs.mock-secrets-nix.nixosModules.default
         ];
       };
 
@@ -48,8 +47,8 @@
 
       tests = import ./tests.nix {
         pkgs = pkgs;
-        sops-nix = inputs.sops-nix;
         sops-nix-mock.nixosModules = nixosModules;
+        inputs = inputs;
       };
 
       devShells.default = pkgs.mkShellNoCC {

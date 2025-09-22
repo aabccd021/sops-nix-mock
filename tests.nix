@@ -1,12 +1,13 @@
 {
   pkgs,
-  sops-nix,
+  inputs,
   sops-nix-mock,
 }:
 let
   baseModule = {
     imports = [
-      sops-nix.nixosModules.default
+      inputs.sops-nix.nixosModules.default
+      inputs.mock-secrets-nix.nixosModules.default
       sops-nix-mock.nixosModules.default
     ];
     # allow-import-from-derivation = false;
