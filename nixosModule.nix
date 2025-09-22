@@ -14,7 +14,7 @@ let
       - path_regex: ".*"
         key_groups:
           - age:
-              - ${config.mock-secrets.age.alice.public}
+              - age1d6s9ne45qkchp5y9v5s527jw7zzu055jcwd2smgy70epwyz7pd8qmx82ft
   '';
 
   mkSopsFile =
@@ -65,13 +65,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    boot.initrd.postDeviceCommands =
-      let
-        keys = pkgs.writeText "sops-mock-keys.txt" config.mock-secrets.age.alice.private;
-      in
-      ''
-        cp -Lr "${keys}" /run/sops-mock-nix-keys.txt
-        chmod -R 400 /run/sops-mock-nix-keys.txt
-      '';
+    boot.initrd.postDeviceCommands = ''
+      printf "AGE-SECRET-KEY-14YX9K83AY8RAZX3P0CYGK60RRE9XHYC6ZY9XSM7PMTRGL6QVAH2SSFPGLS" > /run/sops-mock-nix-keys.txt
+      chmod -R 400 /run/sops-mock-nix-keys.txt
+    '';
   };
 }
