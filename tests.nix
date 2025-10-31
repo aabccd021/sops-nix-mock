@@ -17,7 +17,7 @@ let
 
 in
 {
-  test1 = pkgs.nixosTest {
+  test1 = pkgs.testers.nixosTest {
     name = "test1";
 
     nodes.server =
@@ -71,7 +71,7 @@ in
     '';
   };
 
-  test2 = pkgs.nixosTest {
+  test2 = pkgs.testers.nixosTest {
     name = "test2";
 
     nodes.server =
